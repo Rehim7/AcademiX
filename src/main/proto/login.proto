@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package com.example.academix;
+
+option java_multiple_files = true;
+option java_package = "com.example.academix.proto";
+option java_outer_classname = "AcademiXProto";
+
+
+service AcademiXUserService {
+  rpc CreateAcademiXUser (CreateAcademiXUserRequest) returns (CreateAcademiXUserResponse);
+}
+
+message CreateAcademiXUserRequest {
+  string name = 1;
+  string surName = 2;
+  int64 id = 3;
+  string email = 4;
+  string password = 5;
+  Role role = 6;
+}
+message CreateAcademiXUserResponse {
+  bool success = 1;
+  string uuid = 2;
+  string message = 3;
+}
+message AcademiXUserResponse {
+  string name = 1;
+  string surName = 2;
+  int64 id = 3;
+  string email = 4;
+  string password = 5;
+  Role role = 6;
+  string uuid = 7;
+}
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  STUDENT = 1;
+  TEACHER = 2;
+}

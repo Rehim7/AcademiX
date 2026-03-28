@@ -1,0 +1,17 @@
+package com.example.academix.myEnums;
+
+public enum QuizByClasses {
+    FIRSTCLASS,
+    SECONDCLASS,
+    THIRDCLASS,
+    FOURTHCLASS,
+    FIFTHCLASS,
+    SIXTHCLASS,
+    SEVENTHCLASS,
+    EIGHTHCLASS,
+    NINETHCLASS,
+    TENTHCLASS,
+    ELEVENTHCLASS,
+    TWELTHCLASS,
+    UNIVERSITY
+}
