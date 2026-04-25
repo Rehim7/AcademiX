@@ -20,4 +20,10 @@ public class Questions {
     private String question;
     private Answers correctAnswer;
     private QuestionType questionType;
+
+    private String optionA;
+    private String optionB;
+    private String optionC;
+    private String optionD;
+    private String optionE;
 }

@@ -10,4 +10,10 @@ public class QuestionsResponse {
     private Answers answer;
     private String question;
     private QuestionType questionType;
+
+    private String optionA;
+    private String optionB;
+    private String optionC;
+    private String optionD;
+    private String optionE;
 }

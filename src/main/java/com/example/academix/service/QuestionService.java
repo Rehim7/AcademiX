@@ -32,12 +32,22 @@ public class QuestionService {
         questions.setCorrect(true);
         questions.setQuestionType(questionsRequest.getQuestionType());
         questions.setAnswer(questionsRequest.getAnswer());
+        questions.setOptionA(questionsRequest.getOptionA());
+        questions.setOptionB(questionsRequest.getOptionB());
+        questions.setOptionC(questionsRequest.getOptionC());
+        questions.setOptionD(questionsRequest.getOptionD());
+        questions.setOptionE(questionsRequest.getOptionE());
         Questions save = questionsRepository.save(questions);
         QuestionsResponse questionsResponse = new QuestionsResponse();
         questionsResponse.setAnswer(save.getAnswer());
         questionsResponse.setQuestionType(save.getQuestionType());
         questionsResponse.setQuestion(save.getQuestion());
         questionsResponse.setNumber(save.getNumber());
+        questionsResponse.setOptionA(save.getOptionA());
+        questionsResponse.setOptionB(save.getOptionB());
+        questionsResponse.setOptionC(save.getOptionC());
+        questionsResponse.setOptionD(save.getOptionD());
+        questionsResponse.setOptionE(save.getOptionE());
         return questionsResponse;
     }
 
