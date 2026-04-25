@@ -14,14 +14,11 @@ import java.util.List;
 @Data
 public class AcademiXGroupRequest {
     @NotBlank(message = "Group needs a name")
-    private String groupName;
-    @NotNull(message = "Group type required ")
+    private String name; // mapped from frontend groupName -> name
     private GroupType groupType;
     private String groupPicture;
     private String groupDescription;
-    @NotNull(message = "Group allowance cant be empty")
     private GroupAllowance groupAllowance;
     private String password;
-    @NotNull(message = "Country needed for availability to other users")
     private Country country;
 }

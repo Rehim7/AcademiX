@@ -5,10 +5,13 @@ import com.example.academix.myEnums.Roles;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AcademiXUser {
     @Id
     private Long id;
@@ -19,7 +22,7 @@ public class AcademiXUser {
     private Roles role;
     private boolean banned;
     private int reportCount;
-    private int banTimes;
+    private int banTimes = 0;
     private String UUID;
     private Country country;
     private String profilPicture;

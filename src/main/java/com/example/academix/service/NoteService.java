@@ -8,11 +8,9 @@ import com.example.academix.model.Note;
 import com.example.academix.repository.AcademiXUserRepository;
 import com.example.academix.repository.NoteRepository;
 import com.example.academix.util.JwtUtil;
-import org.checkerframework.checker.units.qual.N;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NoteService {
@@ -24,60 +22,82 @@ public class NoteService {
         this.noteRepository = noteRepository;
         this.jwtUtil = jwtUtil;
     }
+    public NoteResponse createNote(NoteRequest noteRequest, String accessToken) {
+        Long userId = jwtUtil.extractId(accessToken);
 
-    public NoteResponse createNote(NoteRequest noteRequest) {
+        // İstifadəçinin mövcudluğunu yoxlayırıq
+        if (!academiXUserRepository.existsById(userId)) {
+            throw new NotFoundException("User not found");
+        }
+
         Note note = new Note();
         note.setHeadLine(noteRequest.getHeadLine());
         note.setNote(noteRequest.getNote());
         note.setPassword(noteRequest.getPassword());
-        Note save = noteRepository.save(note);
-        NoteResponse noteResponse = new NoteResponse();
-        noteResponse.setId(save.getId());
-        noteResponse.setNote(save.getNote());
-        noteResponse.setHeadLine(save.getHeadLine());
-        noteResponse.setPassword(save.getPassword());
-        return noteResponse;
+        note.setFileUrl(noteRequest.getFileUrl());
+        note.setContentType(noteRequest.getContentType());
+
+        // BURADA: Əgər Note modelində 'userId' sahəsi Long-dursa:
+        note.setUserId(userId);
+
+        // ƏGƏR Note modelində 'user' sahəsi AcademiXUser-dirsə, belə edin:
+        // AcademiXUser user = academiXUserRepository.findById(userId).get();
+        // note.setUser(user);
+
+        Note savedNote = noteRepository.save(note);
+        return mapToResponse(savedNote);
     }
-    public String  deleteNote(Long id,String password) {
-        Optional<Note> byId = noteRepository.findById(id);
-        if (byId.get().getPassword().equals(password)) {
+
+    public List<Note> getNotes(String accessToken) {
+        Long userId = jwtUtil.extractId(accessToken);
+
+        // user.getNotes() yerinə REPO-dan birbaşa sorğu atırıq
+        return noteRepository.findAllByUserId(userId);
+    }
+
+    public String deleteNote(Long id, String password) {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
+        if (note.getPassword().equals(password)) {
             noteRepository.deleteById(id);
             return "Note has been deleted";
         }
-        return "Wrong password or id";
-    }
-    public NoteResponse updateNote(Long id,NoteRequest noteRequest) {
-        Optional<Note> byId = noteRepository.findById(id);
-        NoteResponse noteResponse = new NoteResponse();
-        if (byId.get().getPassword().equals(noteRequest.getPassword())) {
-            byId.get().setHeadLine(noteRequest.getHeadLine());
-            byId.get().setNote(noteRequest.getNote());
-            byId.get().setPassword(noteRequest.getPassword());
-            Note save = noteRepository.save(byId.get());
-            noteResponse.setId( save.getId());
-            noteResponse.setNote(save.getNote());
-            noteResponse.setPassword(save.getPassword());
-            noteResponse.setHeadLine(save.getHeadLine());
-            return noteResponse;
-        }
         throw new NotFoundException("Wrong password");
     }
-    public  NoteResponse getNote(Long id,String password) {
-        Optional<Note> byId = noteRepository.findById(id);
-        NoteResponse noteResponse = new NoteResponse();
-        if (!byId.get().getPassword().equals(password)) {
+
+    public NoteResponse updateNote(Long id, NoteRequest noteRequest) {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
+        if (!note.getPassword().equals(noteRequest.getPassword())) {
             throw new NotFoundException("Wrong password");
         }
-        noteResponse.setId(byId.get().getId());
-        noteResponse.setNote(byId.get().getNote());
-        noteResponse.setPassword(byId.get().getPassword());
-        noteResponse.setHeadLine(byId.get().getHeadLine());
-        return noteResponse;
+        note.setHeadLine(noteRequest.getHeadLine());
+        note.setNote(noteRequest.getNote());
+        note.setPassword(noteRequest.getPassword());
+        note.setFileUrl(noteRequest.getFileUrl());
+        note.setContentType(noteRequest.getContentType());
+        Note save = noteRepository.save(note);
+        return mapToResponse(save);
     }
-    public List<Note> getNotes(String accessToken) {
-        Long l = jwtUtil.extractId(accessToken);
-        Optional<AcademiXUser> byId = academiXUserRepository.findById(l);
+
+    public NoteResponse getNote(Long id, String password) {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
+        if (!note.getPassword().equals(password)) {
+            throw new NotFoundException("Wrong password");
+        }
+        return mapToResponse(note);
+    }
+
+
+    private NoteResponse mapToResponse(Note note) {
         NoteResponse noteResponse = new NoteResponse();
-        return byId.get().getNotes();
+        noteResponse.setId(note.getId());
+        noteResponse.setNote(note.getNote());
+        noteResponse.setHeadLine(note.getHeadLine());
+        noteResponse.setPassword(note.getPassword());
+        noteResponse.setFileUrl(note.getFileUrl());
+        noteResponse.setContentType(note.getContentType());
+        return noteResponse;
     }
 }

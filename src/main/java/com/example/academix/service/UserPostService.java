@@ -28,7 +28,7 @@ public class UserPostService {
     }
 
     public UserPostResponse createUserPost(UserPostRequest userPostRequest,String accessToken) {
-        AcademiXUser byId = academiXUserRepository.findByUserId(jwtUtil.extractId(accessToken));
+        AcademiXUser byId = academiXUserRepository.findById(jwtUtil.extractId(accessToken)).orElseThrow(() -> new RuntimeException("User not found"));
         UserPost userPost = new UserPost();
         userPost.setCreated(LocalDateTime.now());
         userPost.setFile(userPostRequest.getFile());
@@ -45,14 +45,14 @@ public class UserPostService {
     }
     @Scheduled(cron = "0 0 * * * *")
     public void deletePostAuto(){
-        userPostRepository.deleteUserPostByBeforeEndDate(LocalDateTime.now());
+        userPostRepository.deleteByEndDateBefore(LocalDateTime.now());
     }
     public UserPostResponse getPost(Long id) {
-        UserPost userPost = userPostRepository.findByPostId(id);
+        UserPost userPost = userPostRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
         return getUserPostResponse(userPost);
     }
     public List<UserPost> getPostsByUser(Long userId) {
-        AcademiXUser byUserId = academiXUserRepository.findByUserId(userId);
+        AcademiXUser byUserId = academiXUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         List<UserPost> list = byUserId.getUserPosts().stream().toList();
         return list;
     }

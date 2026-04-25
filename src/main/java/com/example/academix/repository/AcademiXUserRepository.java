@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface AcademiXUserRepository extends JpaRepository<AcademiXUser, Long> {
     List<AcademiXUser> findByEmail(String email);
-    AcademiXUser findByUserId(Long id);
 }

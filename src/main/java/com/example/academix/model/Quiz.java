@@ -17,4 +17,5 @@ public class Quiz {
     @JoinColumn(name = "quiz_id")
     private List<Questions> questions;
     private QuizByClasses quizByClasses;
+    private Integer timeLimitSeconds;
 }

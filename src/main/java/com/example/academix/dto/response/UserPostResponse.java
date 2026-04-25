@@ -6,13 +6,12 @@ import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 @Data
 public class UserPostResponse {
     private String title;
     private String file;
     private String description;
     private LocalDateTime created;
-    private Date endDate;
+    private LocalDateTime endDate;
     private String senderName;
 }

@@ -14,5 +14,8 @@ public class Note {
     private Long id;
     private String headLine;
     private String note;
+    private Long userId;
     private String password;
+    private String fileUrl;
+    private String contentType;
 }

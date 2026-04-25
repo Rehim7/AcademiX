@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data
@@ -16,7 +15,7 @@ public class UserPost {
     private String description;
     private LocalDateTime created;
     private  int reportCount;
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private AcademiXUser sender;

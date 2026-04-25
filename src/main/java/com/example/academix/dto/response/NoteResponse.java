@@ -8,4 +8,6 @@ public class NoteResponse {
     private String headLine;
     private String note;
     private String password;
+    private String fileUrl;
+    private String contentType;
 }

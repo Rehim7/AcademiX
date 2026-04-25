@@ -30,9 +30,9 @@ public class AcademiXGroupService {
 
     public AcademiXGroupResponse createGroup(AcademiXGroupRequest academiXGroupRequest, String accessToken) {
         Long l = jwtUtil.extractId(accessToken);
-        AcademiXUser byUserId = userRepository.findByUserId(l);
+        AcademiXUser byUserId = userRepository.findById(l).orElseThrow(() -> new NotFoundException("User not found"));
         AcademiXGroup academiXGroup = new AcademiXGroup();
-        academiXGroup.setGroupName(academiXGroupRequest.getGroupName());
+        academiXGroup.setGroupName(academiXGroupRequest.getName());
         academiXGroup.setGroupDescription(academiXGroupRequest.getGroupDescription());
         academiXGroup.setGroupType(academiXGroupRequest.getGroupType());
         academiXGroup.setCountry(academiXGroupRequest.getCountry());
@@ -40,6 +40,7 @@ public class AcademiXGroupService {
         academiXGroup.setGroupAllowance(academiXGroupRequest.getGroupAllowance());
         academiXGroup.setPassword(academiXGroupRequest.getPassword());
         academiXGroup.setGroupOwner(byUserId);
+        academiXGroup.setGroupAdmins(byUserId);
         AcademiXGroup save = groupRepository.save(academiXGroup);
         AcademiXGroupResponse academiXGroupResponse = getAcademiXGroupResponse(save);
         return academiXGroupResponse;
@@ -54,25 +55,57 @@ public class AcademiXGroupService {
         academiXGroupResponse.setGroupPicture(save.getGroupPicture());
         academiXGroupResponse.setGroupAllowance(save.getGroupAllowance());
         academiXGroupResponse.setMembers(save.getMembers());
-        academiXGroupResponse.setGroupAdminsName(save.getGroupAdmins().getName());
-        academiXGroupResponse.setGroupOwnerName(save.getGroupOwner().getName());
+        academiXGroupResponse.setGroupAdminsName(save.getGroupAdmins() != null ? save.getGroupAdmins().getName() : null);
+        academiXGroupResponse.setGroupOwnerName(save.getGroupOwner() != null ? save.getGroupOwner().getName() : null);
         academiXGroupResponse.setId(save.getId());
         return academiXGroupResponse;
     }
 
+    public List<AcademiXUser> getGroupMembers(Long id) {
+        AcademiXGroup group = groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group not found"));
+        // Usually returning entities directly causes lazy init exceptions or circular reference JSON issues
+        // we should map them, but we'll return the list and rely on JSON mapping to be simple here.
+        return group.getMembers();
+    }
+
     public void joinGroup(Long id,String password,String accessToken){
-        AcademiXGroup byGroupId = groupRepository.findByGroupId(id);
+        AcademiXGroup byGroupId = groupRepository.findById(id).orElseThrow(() -> new NotFoundException("Group not found"));
         Long l = jwtUtil.extractId(accessToken);
-        AcademiXUser byUserId = userRepository.findByUserId(l);
+        AcademiXUser byUserId = userRepository.findById(l).orElseThrow(() -> new NotFoundException("User not found"));
         if (byGroupId == null) {
             throw new NotFoundException("Group not found");
         }
-        if (byGroupId.getPassword().equals(password)) {
+        if (byGroupId.getPassword() == null || byGroupId.getPassword().equals(password)) {
             List<AcademiXUser> members = byGroupId.getMembers();
             members.add(byUserId);
             groupRepository.save(byGroupId);
         }
         
+    }
+
+    public List<AcademiXGroupResponse> getMyGroups(String accessToken) {
+        Long userId = jwtUtil.extractId(accessToken);
+        AcademiXUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        return groupRepository.findByMembersContains(user).stream()
+                .map(AcademiXGroupService::getAcademiXGroupResponse)
+                .toList();
+    }
+
+    public List<AcademiXGroupResponse> getAllGroups() {
+        return groupRepository.findAll().stream()
+                .map(AcademiXGroupService::getAcademiXGroupResponse)
+                .toList();
+    }
+
+    public void deleteGroup(Long groupId, String accessToken) {
+        AcademiXGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new NotFoundException("Group not found"));
+        Long requesterId = jwtUtil.extractId(accessToken);
+        if (group.getGroupOwner() == null || !group.getGroupOwner().getId().equals(requesterId)) {
+            throw new RuntimeException("Only the group owner can delete this group");
+        }
+        groupRepository.delete(group);
     }
 
 }

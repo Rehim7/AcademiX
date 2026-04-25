@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class UserPostRequest {
@@ -17,5 +16,5 @@ public class UserPostRequest {
     private String file;
     private String description;
     @NotNull
-    private Date endDate;
+    private LocalDateTime endDate;
 }

@@ -1,48 +1,32 @@
 package com.example.academix.model;
 
+import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
 
+@Data
+@Entity
 public class ChatMessage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
     private MessageType type;
+
     private LocalDateTime timestamp;
     private String content;
-    private String sender;
+    private String sender;       // legacy field
+    private String senderName;   // full name shown in chat
+    private String senderEmail;  // used for ownership check
+    private Long groupId;
+
+    private boolean isPinned = false;
+    private boolean isDeleted = false;
 
     public enum MessageType {
         CHAT,
         JOIN,
         LEAVE
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public MessageType getType() {
-        return type;
-    }
-
-    public void setType(MessageType type) {
-        this.type = type;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
     }
 }

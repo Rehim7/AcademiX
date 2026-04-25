@@ -7,7 +7,6 @@ import com.example.academix.myEnums.Roles;
 import com.example.academix.repository.AcademiXUserRepository;
 import com.example.academix.util.JwtUtil;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +36,6 @@ public class AcademiXUserService {
         academiXUserResponse.setPassword(academiXUser.getPassword());
         return academiXUserResponse;
     }
-
     public AcademiXUserResponse createUser(String name, String surName, String email, String password, Roles role,Long id){
         academiXUserRepository.findById(id).ifPresent(academiXUser -> { throw new AcademiXUserAlreadyExist("AcademiX user already exist");
         });
@@ -55,7 +53,7 @@ public class AcademiXUserService {
         academiXUser.setBanned(false);
         academiXUser.setBanTimes(0);
         academiXUser.setUUID(generateRandomId());
-        return mapToResponse(academiXUser);
+        AcademiXUser savedUser = academiXUserRepository.save(academiXUser);
+        return mapToResponse(savedUser);
     }
-
 }

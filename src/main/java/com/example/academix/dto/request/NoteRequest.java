@@ -11,4 +11,6 @@ public class NoteRequest {
     private String note;
     @NotBlank(message = "Password needed for security")
     private String password;
+    private String fileUrl;
+    private String contentType;
 }

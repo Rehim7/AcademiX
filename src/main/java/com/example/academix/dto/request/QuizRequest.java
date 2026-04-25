@@ -12,8 +12,20 @@ import java.util.List;
 public class QuizRequest {
     @NotBlank(message = "Quiz needs a name")
     private String title;
-    @NotNull(message = "Quiz needs at least 1 question")
-    private Long questionsId;
-    @NotNull
-    private QuizByClasses quizByClasses;
+    private Integer timeLimitSeconds;
+    private java.util.List<QuestionDto> questions;
+    
+    @Data
+    public static class QuestionDto {
+        private Long id;
+        private String text;
+        private Long correctOptionId;
+        private java.util.List<OptionDto> options;
+    }
+
+    @Data
+    public static class OptionDto {
+        private Long id;
+        private String text;
+    }
 }
