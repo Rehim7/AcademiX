@@ -8,6 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 @Data
 public class UserPostResponse {
+    private Long id;
     private String title;
     private String file;
     private String description;

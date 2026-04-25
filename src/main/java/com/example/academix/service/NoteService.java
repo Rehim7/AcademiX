@@ -58,7 +58,11 @@ public class NoteService {
     public String deleteNote(Long id, String password) {
         Note note = noteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
-        if (note.getPassword().equals(password)) {
+        
+        String dbPass = note.getPassword() == null ? "" : note.getPassword();
+        String reqPass = password == null ? "" : password;
+
+        if (dbPass.equals(reqPass)) {
             noteRepository.deleteById(id);
             return "Note has been deleted";
         }
@@ -83,7 +87,11 @@ public class NoteService {
     public NoteResponse getNote(Long id, String password) {
         Note note = noteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Note not found with id: " + id));
-        if (!note.getPassword().equals(password)) {
+                
+        String dbPass = note.getPassword() == null ? "" : note.getPassword();
+        String reqPass = password == null ? "" : password;
+
+        if (!dbPass.equals(reqPass)) {
             throw new NotFoundException("Wrong password");
         }
         return mapToResponse(note);

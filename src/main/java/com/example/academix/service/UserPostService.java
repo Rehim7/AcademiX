@@ -43,7 +43,8 @@ public class UserPostService {
     public void deletePost(Long id){
         userPostRepository.deleteById(id);
     }
-    @Scheduled(cron = "0 0 * * * *")
+
+    @Scheduled(cron = "0 * * * * *")
     public void deletePostAuto(){
         userPostRepository.deleteByEndDateBefore(LocalDateTime.now());
     }
@@ -57,8 +58,15 @@ public class UserPostService {
         return list;
     }
 
+    public List<UserPostResponse> getAllPosts() {
+        return userPostRepository.findAll().stream()
+                .map(this::getUserPostResponse)
+                .toList();
+    }
+
     private UserPostResponse getUserPostResponse(UserPost userPost) {
         UserPostResponse userPostResponse = new UserPostResponse();
+        userPostResponse.setId(userPost.getId());
         userPostResponse.setCreated(userPost.getCreated());
         userPostResponse.setFile(userPost.getFile());
         userPostResponse.setTitle(userPost.getTitle());
